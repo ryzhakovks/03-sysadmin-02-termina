@@ -119,10 +119,10 @@ root@MMRU59A0000:~# cat -n zd8 && cat -n zd8.1 6>&1 1>&2 2>&6 |wc -l
 **Задание 9.Что выведет команда cat /proc/$$/environ? Как еще можно получить аналогичный по содержанию вывод?**
 Переменные  окружения для  текущего процесса
 
-**Задание 10. Используя man, опишите что доступно по адресам /proc/<PID>/cmdline, /proc/<PID>/exe.**
+**Задание 10. Используя man, опишите что доступно по адресам /proc/<PID>/cmdline, /proc/<PID>/exe**
 /proc/[pid]/cmdline содержит командную строку и аргументы процесса если это не зомби /proc/[pid]/exe содержит симлинк на исполняемую команду. Можно запустить с помощью этой команды копию процесса. 
 
-** Задание 11.Узнайте, какую наиболее старшую версию набора инструкций SSE поддерживает ваш процессор с помощью /proc/cpuinfo.**
+**Задание 11.Узнайте, какую наиболее старшую версию набора инструкций SSE поддерживает ваш процессор с помощью /proc/cpuinfo.**
  ```ruby         
   root@MMRU59A0000:~# grep sse /proc/cpuinfo
 flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology tsc_reliable nonstop_tsc cpuid pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch invpcid_single ssbd ibrs ibpb stibp ibrs_enhanced fsgsbase bmi1 avx2 smep bmi2 erms invpcid avx512f avx512dq rdseed adx smap avx512ifma clflushopt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves avx512vbmi umip avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid fsrm flush_l1d arch_capabilities
@@ -148,3 +148,8 @@ Ctrl-z
 ps-a
 reptyr 1360
 ```
+           
+** Задание 14.sudo echo string > /root/new_file не даст выполнить перенаправление под обычным пользователем, так как перенаправлением занимается процесс shell'а, который запущен без sudo под вашим пользователем. Для решения данной проблемы можно использовать конструкцию echo string | sudo tee /root/new_file. Узнайте? что делает команда tee и почему в отличие от sudo echo команда с sudo tee будет работать.**
+           
+           tee нужна для записи вывода любой команды в один или несколько файлов/ принимает данные из одного источника и может сохранять их на выходе в нескольких местах, а echo - это не системная утилита, у нее нет исполняемого файл, она существует только внутри интерпретатора Bash
+   
