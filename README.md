@@ -83,7 +83,7 @@ fpadmin@fp-sys-demo:~$ tty
 fpadmin@fp-sys-demo:~$ ls -lha "Чо То пошло не так" 2>/dev/pts/1
 ```
 Консоль2 
-
+```ruby
 root@fp-sys-demo:~# ps
   PID TTY          TIME CMD
 16863 pts/1    00:00:00 sudo
