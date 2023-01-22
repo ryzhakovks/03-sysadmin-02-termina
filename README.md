@@ -55,3 +55,22 @@ root@fp-sys-demo:~# ps
 root@fp-sys-demo:~# ls: невозможно получить доступ к 'Чо То пошло не так': Нет такого файла или каталога
 ```
 
+**Задание 5. Получится ли одновременно передать команде файл на stdin и вывести ее stdout в другой файл? Приведите работающий пример.**
+```ruby
+root@MMRU59A0000:~# ls /var > zadanie_5 | grep -n 'l*' zadanie_5 | tee zadanie_5_1
+1:backups
+2:cache
+3:crash
+4:lib
+5:local
+6:lock
+7:log
+8:mail
+9:opt
+10:run
+11:snap
+12:spool
+13:tmp
+```
+
+
