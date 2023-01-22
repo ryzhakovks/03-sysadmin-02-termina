@@ -6,7 +6,7 @@ type -a cd
 cd is a shell builtin
 ```
 
-**Какая альтернатива без pipe команде grep <some_string> <some_file> | wc -l?
+**Задание 2. Какая альтернатива без pipe команде grep <some_string> <some_file> | wc -l?
 Подсказка
 man grep поможет в ответе на этот вопрос.
 Ознакомьтесь с документом о других подобных некорректных вариантах использования pipe.**
@@ -22,4 +22,15 @@ root@MMRU59A0000:~# grep alias .bashrc | wc -l
 ```ruby
 root@MMRU59A0000:~# grep -c alias .bashrc
 14
+```
+
+**Задание 3. Какой процесс с PID 1 является родителем для всех процессов в вашей виртуальной машине Ubuntu 20.04?**
+systemd получается 
+```ruby
+root@MMRU59A0000:~#pstree -p
+systemd(1)─┬─accounts-daemon(1082)─┬─{accounts-daemon}(1135)
+           │                       └─{accounts-daemon}(1147)
+           ├─atd(1080)
+           ├─chronyd(1390)
+           ├─containerd(1481)─┬─{containerd}(1678)
 ```
