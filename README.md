@@ -36,3 +36,22 @@ systemd(1)─┬─accounts-daemon(1082)─┬─{accounts-daemon}(1135)
            ├─chronyd(1390)
            ├─containerd(1481)─┬─{containerd}(1678)
 ```
+
+
+**Задание 4. Как будет выглядеть команда, которая перенаправит вывод stderr ls на другую сессию терминала?**
+Консоль 1 
+```ruby
+fpadmin@fp-sys-demo:~$ tty
+/dev/pts/0
+fpadmin@fp-sys-demo:~$ ls -lha "Чо То пошло не так" 2>/dev/pts/1
+```
+Консоль2 
+```ruby
+root@fp-sys-demo:~# ps
+  PID TTY          TIME CMD
+16863 pts/1    00:00:00 sudo
+16868 pts/1    00:00:00 bash
+17086 pts/1    00:00:00 ps
+root@fp-sys-demo:~# ls: невозможно получить доступ к 'Чо То пошло не так': Нет такого файла или каталога
+```
+
