@@ -131,3 +131,20 @@ flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov 
 flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology tsc_reliable nonstop_tsc cpuid pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch invpcid_single ssbd ibrs ibpb stibp ibrs_enhanced fsgsbase bmi1 avx2 smep bmi2 erms invpcid avx512f avx512dq rdseed adx smap avx512ifma clflushopt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves avx512vbmi umip avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid fsrm flush_l1d arch_capabilities
 ```         
 sse4_1
+
+** Задание 12.При открытии нового окна терминала и vagrant ssh создается новая сессия и выделяется pty.
+Это можно подтвердить командой tty, которая упоминалась в лекции 3.2.
+Однако:vagrant@netology1:~$ ssh localhost 'tty'
+not a tty
+Почитайте, почему так происходит, и как изменить поведени**
+
+По ssh псевдотерминал по умолчанию не создаётся, поэтомы мы получаем такую ошибку. Принудительно создать tty можно ключом -t, втаком случае команда создает tty и показывает его номер или ssh localhost так как для подключения tty не нужен.
+           
+           
+** Задание 13.Бывает, что есть необходимость переместить запущенный процесс из одной сессии в другую. Попробуйте сделать это, воспользовавшись reptyr. Например, так можно перенести в screen процесс, который вы запустили по ошибке в обычной SSH-сессии.**
+```ruby           
+ping 127.0.0.1
+Ctrl-z
+ps-a
+reptyr 1360
+```
