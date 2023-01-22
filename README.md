@@ -25,7 +25,9 @@ root@MMRU59A0000:~# grep -c alias .bashrc
 ```
 
 **Задание 3. Какой процесс с PID 1 является родителем для всех процессов в вашей виртуальной машине Ubuntu 20.04?**
+
 systemd получается 
+
 ```ruby
 root@MMRU59A0000:~#pstree -p
 systemd(1)─┬─accounts-daemon(1082)─┬─{accounts-daemon}(1135)
