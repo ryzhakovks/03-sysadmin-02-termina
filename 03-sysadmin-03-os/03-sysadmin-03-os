@@ -1,0 +1,147 @@
+1. Какой системный вызов делает команда cd?
+       В прошлом ДЗ мы выяснили, что cd не является самостоятельной программой, это shell builtin, поэтому запустить strace непосредственно на cd не получится. Тем не менее, вы можете запустить strace на /bin/bash -c 'cd /tmp'. В этом случае вы увидите полный список системных вызовов, которые делает сам bash при старте.
+       Вам нужно найти тот единственный, который относится именно к cd. Обратите внимание, что strace выдаёт результат своей работы в поток stderr, а не в stdout.
+ 
+Ответ.
+strace /bin/bash -c 'cd /tmp' 
+ chdir("/tmp") 
+
+
+2. Попробуйте использовать команду file на объекты разных типов в файловой системе. Например:
+       vagrant@netology1:~$ file /dev/tty
+       /dev/tty: character special (5/0)
+       vagrant@netology1:~$ file /dev/sda
+       /dev/sda: block special (8/0)
+       vagrant@netology1:~$ file /bin/bash
+       /bin/bash: ELF 64-bit LSB shared object, x86-64
+       Используя strace выясните, где находится база данных file, на основании которой она делает свои догадки.
+
+Ответ.
+strace -o output.log /bin/bash -c 'file /bin/bash' && cat output.log | grep magic
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libmagic.so.1", O_RDONLY|O_CLOEXEC) = 3   
+stat("/home/grigorii_azatyan/.magic.mgc", 0x7ffe5073a820) = -1 ENOENT (Нет такого файла или каталога)   
+stat("/home/grigorii_azatyan/.magic", 0x7ffe5073a820) = -1 ENOENT (Нет такого файла или каталога)   
+openat(AT_FDCWD, "/etc/magic.mgc", O_RDONLY) = -1 ENOENT (Нет такого файла или каталога)   
+stat("/etc/magic", {st_mode=S_IFREG|0644, st_size=111, ...}) = 0   
+openat(AT_FDCWD, "/etc/magic", O_RDONLY) = 3   
+openat(AT_FDCWD, "/usr/share/misc/magic.mgc", O_RDONLY) = 3   
+Результат:
+    • Видим обращение к библиотеке /lib/x86_64-linux-gnu/libmagic.so.1;
+    • Файл /etc/magic, по-видимому, служит для каких-то временных данных;
+    • Видим обращение к файлу /usr/share/misc/magic.mgc
+
+
+
+
+3.Предположим, приложение пишет лог в текстовый файл. Этот файл оказался удален (deleted в lsof), однако возможности сигналом сказать приложению переоткрыть файлы или просто перезапустить приложение – нет. Так как приложение продолжает писать в удаленный файл, место на диске постепенно заканчивается. Основываясь на знаниях о перенаправлении потоков предложите способ обнуления открытого удаленного файла (чтобы освободить место на файловой системе).
+Ответ.
+
+К примеру направляем бесконенчый пинг в тестовый файл 
+ping 192.168.0.1 > pampam.log
+
+Пришлос открыть вторую консоль )
+
+и удаляем файл rm -rf pampam.log
+
+грепаем 
+
+lsof | grep pampam.log
+
+
+ping      1620844                               root    1w      REG              253,0    23165     261126 /root/pampam.log (deleted)
+
+находим PID  1620844, номер файлового дескриптора 1 и проверяем вот так 
+
+ cat /proc/1620844/fd/1
+
+Перенаправляем пустоту  echo  > /proc/1620844/fd/1 и файл чиститься.
+
+
+4.Занимают ли зомби-процессы какие-то ресурсы в ОС (CPU, RAM, IO)?
+Ответ.
+Зомби не занимают памяти (как процессы-сироты), но блокируют записи в таблице процессов, размер которой ограничен для каждого пользователя и системы в целом. https://ru.wikipedia.org/wiki/%D0%9F%D1%80%D0%BE%D1%86%D0%B5%D1%81%D1%81-%D0%B7%D0%BE%D0%BC%D0%B1%D0%B8#%D0%92%D0%BE%D0%B7%D0%BD%D0%B8%D0%BA%D0%BD%D0%BE%D0%B2%D0%B5%D0%BD%D0%B8%D0%B5_%D0%B7%D0%BE%D0%BC%D0%B1%D0%B8 
+
+
+
+
+
+
+5.В iovisor BCC есть утилита opensnoop:
+       root@vagrant:~# dpkg -L bpfcc-tools | grep sbin/opensnoop
+       /usr/sbin/opensnoop-bpfcc
+       На какие файлы вы увидели вызовы группы open за первую секунду работы утилиты? Воспользуйтесь пакетом bpfcc-tools для Ubuntu 20.04. Дополнительные сведения по установке.**
+
+Ответ.
+1791   redis-server        8   0 PID    COMM               FD ERR PATH
+/proc/self/stat
+1660916 docker-compose      3   0 /usr/lib/python3/dist-packages/attr/__pycache__/_funcs.cpython-38.pyc
+1660966 docker-compose      3   0 /usr/lib/python3/dist-packages/cryptography/hazmat/primitives/ciphers/__pycache__/algorithms.cpython-38.pyc
+1660966 docker-compose      3   0 /usr/lib/python3/dist-packages/cryptography/hazmat/primitives/kdf/__pycache__/__init__.cpython-38.pyc
+1660966 docker-compose      3   0 /usr/lib/python3/dist-packages/cryptography/hazmat/primitives/kdf
+1660966 docker-compose      3   0 /usr/lib/python3/dist-packages/cryptography/hazmat/primitives/kdf/__pycache__/scrypt.cpython-38.pyc
+1660966 docker-compose      3   0 /usr/lib/python3/dist-packages/urllib3/packages/backports/__pycache__/__init__.cpython-38.pyc
+1660916 docker-compose      3   0 /usr/lib/python3/dist-packages/attr/__pycache__/_version_info.cpython-38.pyc
+1660916 docker-compose      3   0 /usr/lib/python3/dist-packages/jsonschema/__pycache__/_utils.cpython-38.pyc
+1660993 docker-compose      3   0 /usr/lib/python3.8/__pycache__/tokenize.cpython-38.pyc
+
+
+6. Какой системный вызов использует uname -a? Приведите цитату из man по этому системному вызову, где описывается альтернативное местоположение в /proc, где можно узнать версию ядра и релиз ОС.
+
+
+
+
+
+
+
+
+Ответ.
+uname({sysname="Linux", nodename="fo", ...}) = 0
+fstat(1, {st_mode=S_IFCHR|0600, st_rdev=makedev(0x88, 0x1), ...}) = 0
+uname({sysname="Linux", nodename="fo", ...}) = 0
+uname({sysname="Linux", nodename="fo", ...}) = 0
+write(1, "Linux fo 5.4.0-137-generic #154-"..., 102Linux fo 5.4.0-137-generic #154-Ubuntu SMP Thu Jan 5 17:03:22 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+) = 102
+
+
+Part of the utsname information is also accessible via /proc/sys/kernel/{ostype, hostname, osrelease, version, domainname}. 
+
+
+7.Чем отличается последовательность команд через ; и через && в bash? Например:
+root@netology1:~# test -d /tmp/some_dir; echo Hi
+Hi
+root@netology1:~# test -d /tmp/some_dir && echo Hi
+root@netology1:~#
+Ответ.
+
+
+`&&` логический оператор. 
+`;` разделитель команд.
+
+`test -d /tmp/some_dir && echo Hi` `echo` выполнится, если команда `test` выполнится успешно.
+set -e установка или снятие значений параметров оболочки. Использование с && не имеет смысла, т.к. с -e произойдет немедленный выход, если команда завершается с ненулевым статусом
+
+8. Из каких опций состоит режим bash set -euxo pipefail и почему его хорошо было бы использовать в сценариях?
+
+Ответ.
+`-e` Немедленный выход, если команда завершается с ненулевым статусом. 
+`-u` При подстановке обрабатывать неустановленные переменные как ошибку.
+`-x` Печатать команды и их аргументы по мере их выполнения. 
+`-o option-pipefail` возвращаемое значение конвейера - это статус последней команды для выхода с ненулевым статусом или ноль, если ни одна команда не завершилась с ненулевым статусом.
+
+Для сценария увеличивает детальность логирования. 
+Прервет сценарий при возникновении ошибки, кроме завершающей команды.
+9.Используя -o stat для ps, определите, какой наиболее часто встречающийся статус у процессов в системе. В man ps ознакомьтесь (/PROCESS STATE CODES) что значат дополнительные к основной заглавной буквы статуса процессов. Его можно не учитывать при расчете (считать S, Ss или Ssl равнозначными).
+
+Ответ.
+
+`Ss` - неактивные процессы;
+`R+` - выполняющиеся в группе приоритетных.
+
+Дополнительные к заглавной букве - это дополнительные значения состояния процесса:
+`<` - высокий приоритет;
+`N` - низкий приорит;
+`L` - имеет страницы, заблокированные в памяти;
+`s` - является лидером сеанса;
+`l` - является многопоточным;
+`+` - находится в группе приоритетных процессов.  
+
